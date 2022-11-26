@@ -145,5 +145,5 @@ VALIDATION_ERRORS = {
     "RECIPE_ALREADY_IN_SHOPPING_CART": "Рецепт уже есть в списке покупок.",
     "RECIPE_NOT_FOUND_IN_SHOPPING_CART": "В списке покупок рецепт не найден.",
     "RECIPE_ALREADY_IN_FAVORITED": "Рецепт уже есть в избранном.",
-    "RECIPE_NOT_FOUND_IN_FAVORITED": "В избранном рецепт не найден.",
+    "RECIPE_NOT_FOUND_IN_FAVORITED": "В избранном рецепт не найден!",
 }
