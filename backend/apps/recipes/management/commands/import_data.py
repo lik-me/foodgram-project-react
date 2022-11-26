@@ -13,6 +13,7 @@ FILES_TBLS_LIST = {
 
 PATH_TO_CSV = os.path.join(settings.BASE_DIR, "data")
 
+
 class Command(BaseCommand):
     help = "Import data from csv files to DB"
 
@@ -36,7 +37,8 @@ class Command(BaseCommand):
                                 row, header_in_query, tbl_t, file_name
                             )
                         else:
-                            sql_fld_values = self.data_handler(row, file_name, row_num)
+                            sql_fld_values = self.data_handler(
+                                row, file_name, row_num)
                             sql_body_final = (
                                 f"{sql_hdr} VALUES ({sql_fld_values})"
                             )
@@ -46,7 +48,6 @@ class Command(BaseCommand):
         # should comment if PosgreSQL used
         # cursor.execute("PRAGMA foreign_keys = ON;")
         self.stdout.write(self.style.SUCCESS("Импорт данных завершен!"))
-
 
     def header_handler(self, row, header_in_query, tbl_t, file_name):
         """

@@ -104,9 +104,9 @@ class RecipesViewSet(viewsets.ModelViewSet):
         recipe_author_id = serializer_data["author"]["id"]
         if str(request.user) != "AnonymousUser":
             if RecipeFavorited.objects.filter(
-                                              user=request.user,
-                                              recipe_id=recipe_id
-                                              ).count() != 0:
+                    user=request.user,
+                    recipe_id=recipe_id
+            ).count() != 0:
                 recipe_is_favorited = True
             if ShoppingCart.objects.filter(user=request.user,
                                            recipe_id=recipe_id).count() != 0:
@@ -133,7 +133,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
             data_to_response_new_order = (
                 utils.recipe_serializer_response_update(
                     data_to_response)
-                )
+            )
             data_to_response_new_order['image'] = row_image_data
             return Response(data_to_response_new_order,
                             status=status.HTTP_201_CREATED)
@@ -141,7 +141,8 @@ class RecipesViewSet(viewsets.ModelViewSet):
 
     def update(self, request, *args, **kwargs):
         serializer = self.serializer_class(
-                    instance=self.get_object(), data=request.data)
+            instance=self.get_object(),
+            data=request.data)
         row_image_data = self.request.data['image']
         tags = self.request.data.get("tags")
         ingredients = self.request.data.get("ingredients")
@@ -158,14 +159,13 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(
-            methods=("GET",),
-            detail=False,
-            permission_classes=(IsAuthenticated,),
-            url_path="download_shopping_cart",
-        )
+        methods=("GET",),
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+        url_path="download_shopping_cart",)
     def download_shopping_cart(self, request):
         recipes_in_shopping_cart = ShoppingCart.objects.filter(
-                            user=request.user)
+            user=request.user)
         recipes_ingredients_in_shopping_cart = RecipeIngredient.objects.filter(
             recipe_id__in=Subquery
             (recipes_in_shopping_cart.values("recipe_id"))).values(
@@ -213,8 +213,7 @@ class ShoppingCartViewSet(generics.CreateAPIView, generics.DestroyAPIView):
                                        user=request.user).count() != 0:
             return Response({"errors":
                             VALIDATION_ERRORS[
-                                'RECIPE_ALREADY_IN_SHOPPING_CART'
-                                ]},
+                                'RECIPE_ALREADY_IN_SHOPPING_CART']},
                             status=status.HTTP_400_BAD_REQUEST)
         if serializer.is_valid(self):
             serializer.save(recipe_id=recipe_id, user=request.user)
@@ -233,11 +232,10 @@ class ShoppingCartViewSet(generics.CreateAPIView, generics.DestroyAPIView):
         recipe_id = kwargs['recipe_id']
         if ShoppingCart.objects.filter(recipe_id=recipe_id,
                                        user=request.user).count() == 0:
-            return Response({
-                    "errors":
-                    VALIDATION_ERRORS['RECIPE_NOT_FOUND_IN_SHOPPING_CART']
-                    },
-                    status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"errors":
+                    VALIDATION_ERRORS['RECIPE_NOT_FOUND_IN_SHOPPING_CART']},
+                status=status.HTTP_400_BAD_REQUEST)
         ShoppingCart.objects.get(recipe_id=recipe_id,
                                  user=request.user).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -280,10 +278,8 @@ class RecipeFavoritedViewSet(generics.CreateAPIView, generics.DestroyAPIView):
         recipe_id = kwargs['recipe_id']
         if RecipeFavorited.objects.filter(recipe_id=recipe_id,
                                           user=request.user).count() == 0:
-            return Response({
-                            "errors":
-                            VALIDATION_ERRORS[
-                                             'RECIPE_NOT_FOUND_IN_FAVORITED']},
+            return Response({"errors": VALIDATION_ERRORS[
+                            'RECIPE_NOT_FOUND_IN_FAVORITED']},
                             status=status.HTTP_400_BAD_REQUEST,
                             )
         RecipeFavorited.objects.get(recipe_id=recipe_id,

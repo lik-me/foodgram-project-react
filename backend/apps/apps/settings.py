@@ -22,7 +22,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "djoser",
-    "django_filters",    
+    "django_filters",
     "users",
     "recipes",
 ]
@@ -97,8 +97,7 @@ USE_TZ = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-       "rest_framework.authentication.TokenAuthentication",
-    ],
+        "rest_framework.authentication.TokenAuthentication",],
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
     ],
@@ -111,7 +110,7 @@ DJOSER = {
     'HIDE_USERS': False,
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.AllowAny'],
-    },    
+    },
     'SERIALIZERS': {
         'user_create': 'api.serializers.UserRegistrationSerializer',
         'user': 'api.serializers.UserListSerializer',
@@ -134,17 +133,17 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 VALIDATION_ERRORS = {
-        "FIELD_REQUIRED": "Обязательное поле.",
-        "USER_EMAIL_NOT_FOUND": "Пользователь с таким email не найден.",
-        "USER_NAME_EMAIL_WRONG": "Имя пользователя и пароль не совпадают. Введите правильные данные.",
-        "RECIPE_AMOUNT_WRONG": "Убедитесь, что значение поля 'Количество' для ингридиента больше либо равно 1.",
-        "RECIPE_NAME_WRONG": "Убедитесь, что длина поля <= 200 cимволов.",
-        "COOKING_TIME_WRONG": "Убедитесь, что значение поля cooking_time >= 1.",
-        "USER_ALREADY_SUBSCRIBED": "Вы уже подписаны на этого пользователя.",
-        "SELF_SUBSCRIBED": "Нельзя подписаться на самого себя.",
-        "USER_SUBSCRIBE_WRONG": "Вы не подписаны на этого пользователя.",
-        "RECIPE_ALREADY_IN_SHOPPING_CART": "Рецепт уже есть в списке покупок.",
-        "RECIPE_NOT_FOUND_IN_SHOPPING_CART": "В списке покупок рецепт не найден.",
-        "RECIPE_ALREADY_IN_FAVORITED": "Рецепт уже есть в избранном.",
-        "RECIPE_NOT_FOUND_IN_FAVORITED": "В избранном рецепт не найден.",
-    }
+    "FIELD_REQUIRED": "Обязательное поле.",
+    "USER_EMAIL_NOT_FOUND": "Пользователь с таким email не найден.",
+    "USER_NAME_EMAIL_WRONG": "Имя пользователя и пароль не совпадают. Введите правильные данные.",
+    "RECIPE_AMOUNT_WRONG": "Убедитесь, что значение поля 'Количество' для ингридиента больше либо равно 1.",
+    "RECIPE_NAME_WRONG": "Убедитесь, что длина поля <= 200 cимволов.",
+    "COOKING_TIME_WRONG": "Убедитесь, что значение поля cooking_time >= 1.",
+    "USER_ALREADY_SUBSCRIBED": "Вы уже подписаны на этого пользователя.",
+    "SELF_SUBSCRIBED": "Нельзя подписаться на самого себя.",
+    "USER_SUBSCRIBE_WRONG": "Вы не подписаны на этого пользователя.",
+    "RECIPE_ALREADY_IN_SHOPPING_CART": "Рецепт уже есть в списке покупок.",
+    "RECIPE_NOT_FOUND_IN_SHOPPING_CART": "В списке покупок рецепт не найден.",
+    "RECIPE_ALREADY_IN_FAVORITED": "Рецепт уже есть в избранном.",
+    "RECIPE_NOT_FOUND_IN_FAVORITED": "В избранном рецепт не найден.",
+}

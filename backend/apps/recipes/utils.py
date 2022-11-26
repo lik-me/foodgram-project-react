@@ -8,16 +8,17 @@ from apps.settings import MEDIA_ROOT
 def recipe_image_name(instance, filename):
     file_ext = filename[filename.rfind("."):]
     file_name = (f"{str(instance.id)}{file_ext}")
-    return join(['recipes', 'images', file_name])
-    #return path_join(['recipes', 'images', file_name])
+    return path_join('recipes', 'images', file_name)
+    # return join(['recipes', 'images', file_name])
+    # return path_join(['recipes', 'images', file_name])
 
 
 def recipe_image_create(data, recipe_id):
     image_data = re.search(r'([^\/]*)/([^;]*);([^,]*),(.*)', data)
     decoded_image_data = base64.b64decode(image_data[4])
     f = open(path_join(
-                MEDIA_ROOT, 'recipes', 'images',
-                f"{recipe_id}.{image_data[2]}"), 'wb')
+        MEDIA_ROOT, 'recipes', 'images',
+        f"{recipe_id}.{image_data[2]}"), 'wb')
     f.write(decoded_image_data)
     f.close()
     return f"/recipes/images/{recipe_id}.{image_data[2]}"

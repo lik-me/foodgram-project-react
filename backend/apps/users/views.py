@@ -1,14 +1,13 @@
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status, viewsets
-from users.models import User
-from recipes.models import Subscription, Recipe
-from api.serializers import (SubscriptionSerializer, 
-                             SubscriptionSerializerList,)
-from rest_framework.response import Response
-# from django.contrib.auth.hashers import check_password, make_password
+from api.serializers import SubscriptionSerializer, SubscriptionSerializerList
 from django.db.models import Subquery
 from recipes import utils
+from recipes.models import Recipe, Subscription
+from rest_framework import status, viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
 from apps.settings import VALIDATION_ERRORS
+from users.models import User
 
 
 class UserSubscriptionViewSet(viewsets.ModelViewSet):
@@ -29,11 +28,11 @@ class UserSubscriptionViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.request.method == "GET":
             following_users_pre = (
-                    Subscription.objects.filter(user=self.request.user)
-                                  )
+                Subscription.objects.filter(user=self.request.user)
+            )
             queryset = User.objects.filter(
-                    pk__in=Subquery(following_users_pre.values('following_id'))
-                    ).all()
+                pk__in=Subquery(following_users_pre.values('following_id'))
+            ).all()
             return queryset
         queryset = Subscription.objects.filter(user=self.request.user).all()
         return queryset
@@ -43,33 +42,31 @@ class UserSubscriptionViewSet(viewsets.ModelViewSet):
         if self.request.query_params.get("recipes_limit"):
             context['recipes_limit'] = (
                 self.request.query_params.get("recipes_limit")
-                )
+            )
         return context
 
     def create(self, request, **kwargs):
         following_id = kwargs['following_id']
         serializer = self.serializer_class(data=request.data)
         if Subscription.objects.filter(
-                following_id=following_id, user=request.user
-                ).count() != 0:
-            return Response({"errors": 
-                            VALIDATION_ERRORS['USER_ALREADY_SUBSCRIBED']}, 
+                following_id=following_id, user=request.user).count() != 0:
+            return Response({"errors":
+                            VALIDATION_ERRORS['USER_ALREADY_SUBSCRIBED']},
                             status=status.HTTP_400_BAD_REQUEST)
         if following_id == request.user.id:
             return Response({
-                "errors": VALIDATION_ERRORS['SELF_SUBSCRIBED']
-                }, 
+                "errors": VALIDATION_ERRORS['SELF_SUBSCRIBED']},
                 status=status.HTTP_400_BAD_REQUEST)
 
         if serializer.is_valid(self):
             serializer.save(following_id=following_id, user=request.user)
             following_user = User.objects.filter(
-                    pk=following_id).values(
-                        "email", "id", "username", "first_name", "last_name")
+                pk=following_id).values(
+                    "email", "id", "username", "first_name", "last_name")
             following_user_recipes_pre = Recipe.objects.filter(
-                    author=following_id)
+                author=following_id)
             following_user_recipes = following_user_recipes_pre.values(
-                    "id", "name", "image", "cooking_time")
+                "id", "name", "image", "cooking_time")
             ri = 0
             for cur_recipe in following_user_recipes:
                 recipe_image = utils.recipe_image_name_get(
@@ -84,10 +81,10 @@ class UserSubscriptionViewSet(viewsets.ModelViewSet):
             following_user_d["recipes"] = following_user_recipes
             following_user_d["recipes_count"] = following_user_recipes_count
             return Response(
-                following_user_d, 
+                following_user_d,
                 status=status.HTTP_201_CREATED
             )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, **kwargs):
         following_id = kwargs['following_id']
@@ -98,5 +95,5 @@ class UserSubscriptionViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         Subscription.objects.get(
-                following_id=following_id, user=request.user).delete()
+            following_id=following_id, user=request.user).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

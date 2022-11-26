@@ -50,7 +50,7 @@ class RecipeAdmin(admin.ModelAdmin):
         count = RecipeFavorited.objects.filter(recipe_id=obj.pk).count()
         return f"{count}"
     favourited_count.short_description = (
-            "Этот рецепт в избранном пользователей")
+        "Этот рецепт в избранном пользователей")
 
 
 class ShoppingCartAdmin(admin.ModelAdmin):

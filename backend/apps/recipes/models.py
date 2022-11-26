@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+
 from . import utils
 
 
@@ -24,7 +25,7 @@ class Ingredients(models.Model):
 
 class Tags(models.Model):
 	name = models.TextField(
-		max_length=100, 
+		max_length=100,
 		help_text="Введите название тэга",
 		verbose_name="Название тэга",
 	)
@@ -34,14 +35,14 @@ class Tags(models.Model):
 		verbose_name="Цвет",
 	)
 	slug = models.SlugField(
-		max_length=50, 
+		max_length=50,
 		unique=True,
 		db_index=True,
 	)
 
 	class Meta:
 		verbose_name = "Тег"
-		verbose_name_plural = "Теги"	
+		verbose_name_plural = "Теги"
 
 	def __str__(self):
 		return self.name
@@ -86,7 +87,7 @@ class Recipe(models.Model):
 		blank=False,
 	)
 	ingredients = models.ManyToManyField(
-		Ingredients, 
+		Ingredients,
 		through='RecipeIngredient',
 		related_name="ingredient",
 		verbose_name="Ингредиенты",
@@ -103,12 +104,12 @@ class Recipe(models.Model):
 
 class RecipeIngredient(models.Model):
 	recipe = models.ForeignKey(
-		Recipe, 
+		Recipe,
 		on_delete=models.CASCADE,
 		verbose_name="Рецепт",
 	)
 	ingredient = models.ForeignKey(
-		Ingredients, 
+		Ingredients,
 		on_delete=models.CASCADE,
 		related_name="ingredient_name",
 		verbose_name="Ингредиенты",
@@ -126,15 +127,15 @@ class RecipeIngredient(models.Model):
 
 class ShoppingCart(models.Model):
 	recipe = models.ForeignKey(
-		Recipe, 
+		Recipe,
 		on_delete=models.CASCADE,
-		related_name = "shopping_cart",
-		verbose_name = "Рецепт",
-		)
+		related_name="shopping_cart",
+		verbose_name="Рецепт",
+	)
 	user = models.ForeignKey(
 		User,
-		on_delete = models.CASCADE,
-		related_name = "shopping_cart",
+		on_delete=models.CASCADE,
+		related_name="shopping_cart",
 		verbose_name="Автор",
 	)
 
@@ -149,14 +150,14 @@ class ShoppingCart(models.Model):
 
 class RecipeFavorited(models.Model):
 	recipe = models.ForeignKey(
-		Recipe, 
+		Recipe,
 		on_delete=models.CASCADE,
-		verbose_name = "Рецепт",
-		)
+		verbose_name="Рецепт",
+	)
 	user = models.ForeignKey(
 		User,
-		on_delete = models.CASCADE,
-		related_name = "recipe_favorited",
+		on_delete=models.CASCADE,
+		related_name="recipe_favorited",
 		verbose_name="Автор",
 	)
 
@@ -168,14 +169,14 @@ class RecipeFavorited(models.Model):
 
 class Subscription(models.Model):
 	user = models.ForeignKey(
-        User, 
-		on_delete=models.CASCADE, 
+		User,
+		on_delete=models.CASCADE,
 		related_name='follow',
 	)
 	following = models.ForeignKey(
 		User,
-		on_delete = models.CASCADE,
-		related_name = "following",
+		on_delete=models.CASCADE,
+		related_name="following",
 	)
 
 	class Meta:
