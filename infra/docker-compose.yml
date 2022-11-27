@@ -13,7 +13,8 @@ services:
     volumes:
       - /var/lib/postgresql/data/
     env_file:
-      - ../backend/apps/apps/.env
+     # - ../backend/apps/apps/.env
+      - . /backend/apps/apps/.env
 
   web:
     build: ../backend
@@ -21,12 +22,11 @@ services:
     volumes:
       - static_value:/app/static/
       - media_value:/app/media/
-    #ports:
-    # - "8000:8000"
     depends_on:
       - db
     env_file:
-      - ../backend/apps/apps/.env
+     # - ../backend/apps/apps/.env
+      - . /backend/apps/apps/.env
 
   nginx:
     image: nginx:1.19.3
