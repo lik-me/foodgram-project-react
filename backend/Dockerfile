@@ -1,6 +1,9 @@
 FROM python:3.7-slim
 RUN mkdir /app
-COPY requirements.txt /app
+#for local
+#COPY requirements.txt /app
+#for online
+COPY . /requirements.txt /app
 RUN pip3 install -r /app/requirements.txt --no-cache-dir
 #for local
 #COPY apps/ /app
