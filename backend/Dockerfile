@@ -3,7 +3,7 @@ RUN mkdir /app
 #for local
 #COPY requirements.txt /app
 #for online
-COPY . requirements.txt /app
+COPY . /backend/requirements.txt /app
 RUN pip3 install -r /app/requirements.txt --no-cache-dir
 #for local
 #COPY apps/ /app
