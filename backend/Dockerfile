@@ -3,11 +3,11 @@ RUN mkdir /app
 #for local
 #COPY requirements.txt /app
 #for online
-COPY . /requirements.txt /app
+COPY . requirements.txt /app
 RUN pip3 install -r /app/requirements.txt --no-cache-dir
 #for local
 #COPY apps/ /app
 #for online
-COPY . /apps/ /app
+COPY . apps/ /app
 WORKDIR /app
 CMD ["gunicorn", "apps.wsgi:application", "--bind", "0:8000"]
