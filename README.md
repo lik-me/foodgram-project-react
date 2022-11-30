@@ -21,7 +21,7 @@ React
 # После запуска приложения в контейнере 
 - выполните миграции,
 - создайте суперпользователя,
-- перенесите статичный контент,
+- перенесите статичный конистративную панель используйте тент,
 - войдите в админку,
 - создайте одну-две записи объектов.
 
@@ -29,11 +29,10 @@ React
 sudo docker-compose exec web python manage.py migrate
 sudo docker-compose exec web python manage.py createsuperuser
 sudo docker-compose exec web python manage.py collectstatic
+Административная панель:
 http://51.250.70.5/admin/
+login: admin
+password: 12345678LIK
 ```
 
-# Примеры API
-```
-http://51.250.70.5/redoc/
-```
-
+Проект запущен на http://51.250.70.5

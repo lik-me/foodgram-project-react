@@ -9,6 +9,8 @@ from recipes.models import (Ingredients, Recipe, RecipeFavorited,
                             User)
 from rest_framework import generics, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.pagination import PageNumberPagination
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -60,38 +62,53 @@ class RecipesViewSet(viewsets.ModelViewSet):
         IsUserOrReadOnly,
     )
 
-    def get_queryset(self):
-        queryset = Recipe.objects.all()
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('author',)
+
+    def list(self, request):
+        recipes_list = Recipe.objects.all()
         tags = self.request.query_params.get('tags')
         author = self.request.query_params.get('author')
         limit = self.request.query_params.get('limit')
         is_favorited = self.request.query_params.get('is_favorited')
         is_in_shopping_cart = self.request.query_params.get(
             'is_in_shopping_cart')
+        tags_query = self.request.query_params.getlist('tags',)
+        filters = {}
+
         if tags is not None:
             tags_query = self.request.query_params.getlist('tags',)
-            queryset = Recipe.objects.filter(tags__slug__in=tags_query)
-        elif author is not None:
+            recipes_list = Recipe.objects.filter(tags__slug__in=tags_query)
+            filters["tags__slug__in"] = tags_query
+        if author is not None:
             author_query = self.request.query_params['author']
-            queryset = Recipe.objects.filter(author=author_query)
-        elif is_favorited and str(self.request.user) != 'AnonymousUser':
+            recipes_list = Recipe.objects.filter(author=author_query)
+            filters["author"] = author_query
+        if is_favorited and str(self.request.user) != 'AnonymousUser':
             is_favorited_query = self.request.query_params['is_favorited']
             if int(is_favorited_query) == 1:
                 recipes_favorited = RecipeFavorited.objects.filter(
-                    user_id=self.request.user)
-                queryset = Recipe.objects.filter(
+                    user_id=self.request.user).values("recipe_id")
+                recipes_list.filter(
                     pk__in=Subquery(recipes_favorited.values("recipe_id")))
-        elif is_in_shopping_cart and str(self.request.user) != 'AnonymousUser':
+                filters["pk__in"] = recipes_favorited
+        if is_in_shopping_cart and str(self.request.user) != 'AnonymousUser':
             if int(is_in_shopping_cart) == 1:
                 recipes_shopping_cart = ShoppingCart.objects.filter(
-                    user_id=self.request.user)
-                queryset = Recipe.objects.filter(
+                    user_id=self.request.user).values("recipe_id")
+                recipes_list.filter(
                     pk__in=Subquery(recipes_shopping_cart.values("recipe_id")))
-
+                filters["pk__in"] = recipes_shopping_cart
+        recipes_list = Recipe.objects.filter(**filters).distinct()
         if limit is not None:
             limit = int(limit)
-            queryset = queryset[:limit]
-        return queryset
+        else:
+            limit = 10
+        paginator = PageNumberPagination()
+        paginator.page_size = limit
+        result_page = paginator.paginate_queryset(recipes_list, request)
+        serializer = self.get_serializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def retrieve(self, request, *args, **kwargs):
         recipe_id = kwargs["pk"]
@@ -140,20 +157,32 @@ class RecipesViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, *args, **kwargs):
+        context = {}
+        if self.request.data.get('image') is None or self.request.data['image'] == "":
+            recipe_id = kwargs['pk']
+            image_saved = Recipe.objects.filter(id=recipe_id).values("image")
+            image_already_saved = image_saved[0]['image']
+            self.request.data['image'] = image_already_saved
+            context = {'image_already_saved':image_already_saved}
+            row_image_data = image_already_saved
+        else:
+            row_image_data = self.request.data['image']
         serializer = self.serializer_class(
             instance=self.get_object(),
-            data=request.data)
-        row_image_data = self.request.data['image']
+            data=request.data,
+            context=context)
         tags = self.request.data.get("tags")
         ingredients = self.request.data.get("ingredients")
         if serializer.is_valid():
             serializer.save(tags=tags,
                             ingredients=ingredients,
-                            author=self.request.user)
+                            author=self.request.user,
+                            )
             data_to_response = serializer.data
             data_to_response_new_order = (
                 utils.recipe_serializer_response_update(data_to_response))
             data_to_response_new_order['image'] = row_image_data
+            #data_to_response_new_order['image'] = "image"
             return Response(data_to_response_new_order,
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

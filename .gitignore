@@ -130,3 +130,6 @@ dmypy.json
 
 # .idea
 .idea
+
+# project images
+/backend/apps/media/

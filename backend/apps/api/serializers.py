@@ -172,6 +172,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         return data
 
     def to_internal_value(self, data):
+        # print(self.instance.id)
+        # print(self.context.get('id', None))
+        # print(self.instance.__hash__())
+        # print(self.instance)
+        # print(self.context.get("image_already_saved"))
+        image_already_saved = 0
+        if self.context.get("image_already_saved") is not None:
+            image_already_saved = 1
         required_fields = (
             "image", "name", "text",
             "cooking_time", "tags",
@@ -201,7 +209,8 @@ class RecipeSerializer(serializers.ModelSerializer):
             'image': image_data,
             'name': data['name'],
             'text': data['text'],
-            'cooking_time': data['cooking_time']
+            'cooking_time': data['cooking_time'],
+            'image_already_saved': image_already_saved
         }
 
     def update(self, instance, validated_data):
@@ -224,7 +233,10 @@ class RecipeSerializer(serializers.ModelSerializer):
                 ingredient=ingredient,
                 amount=ingr['amount'],
                 recipe=instance)
-        image_info_to_save = utils.recipe_image_create(image, instance.id)
+        if validated_data.get('image_already_saved') == 0:
+            image_info_to_save = utils.recipe_image_create(image, instance.id)
+        else:
+            image_info_to_save = image
         instance.image = image_info_to_save
         instance.save()
         return instance
@@ -234,6 +246,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         tags = validated_data.pop("tags")
         image = validated_data.pop("image")
         validated_data["image"] = 'null'
+        validated_data.pop("image_already_saved")
         recipe = Recipe.objects.create(**validated_data)
         for tg in tags:
             recipe.tags.add(tg)
