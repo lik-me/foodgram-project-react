@@ -6,9 +6,9 @@ load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-SECRET_KEY = 'k4))2bx&e!qt*82&8=9lyjf)c(x5)sg&w+$)@6%9))-emh=$tu'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "*"]
 
@@ -85,7 +85,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'UTC'
 
@@ -119,7 +119,6 @@ DJOSER = {
     },
 }
 
-
 AUTH_USER_MODEL = "users.User"
 
 STATIC_URL = '/static/'
@@ -147,3 +146,5 @@ VALIDATION_ERRORS = {
     "RECIPE_ALREADY_IN_FAVORITED": "Рецепт уже есть в избранном.",
     "RECIPE_NOT_FOUND_IN_FAVORITED": "В избранном рецепт не найден!",
 }
+
+RECIPES_PER_PAGE = 10

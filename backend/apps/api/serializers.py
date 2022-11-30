@@ -10,12 +10,18 @@ from apps.settings import VALIDATION_ERRORS
 
 
 class UserRegistrationSerializer(UserCreateSerializer):
+    """
+    Сериализатор для регистрации пользователя.
+    """
     class Meta(UserCreateSerializer.Meta):
         fields = ("email", "username", "first_name", "last_name", "password")
         read_only_fields = ['password']
 
 
 class UserListSerializer(UserSerializer):
+    """
+    Сериализатор для листинга пользователей.
+    """
     class Meta(UserSerializer.Meta):
         fields = (
             "email", "id", "username",
@@ -39,7 +45,9 @@ class UserListSerializer(UserSerializer):
 
 
 class UserTokenCreateSerializer(TokenCreateSerializer):
-
+    """
+    Сериализатор токена.
+    """
     email = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
 
@@ -63,6 +71,9 @@ class UserTokenCreateSerializer(TokenCreateSerializer):
 
 
 class UsersSerializer(serializers.ModelSerializer):
+    """
+    Основной сериализатор пользовательских данных.
+    """
     class Meta:
         model = User
         fields = ("email", "id", "username",
@@ -92,6 +103,9 @@ class UsersPasswordSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
+    """
+    Tag's data serializer.
+    """
     class Meta:
         model = Tags
         fields = ("id", "name", "color", "slug")
@@ -99,12 +113,18 @@ class TagSerializer(serializers.ModelSerializer):
 
 
 class IngredientSerializer(serializers.ModelSerializer):
+    """
+    Ingredient's data serializer.
+    """
     class Meta:
         model = Ingredients
         fields = ("id", "name", "measurement_unit")
 
 
 class RecipeIngredientSerializer(serializers.ModelSerializer):
+    """
+    Recipe ingredient's data serializer.
+    """
     name = serializers.ReadOnlyField(source='ingredient.name')
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit')
@@ -117,6 +137,9 @@ class RecipeIngredientSerializer(serializers.ModelSerializer):
 
 
 class RecipeSerializer(serializers.ModelSerializer):
+    """
+    Recipe's data serializer.
+    """
     tags = TagSerializer(many=True, required=False, read_only=True)
     ingredients = RecipeIngredientSerializer(
         source="recipeingredient_set",
@@ -172,11 +195,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         return data
 
     def to_internal_value(self, data):
-        # print(self.instance.id)
-        # print(self.context.get('id', None))
-        # print(self.instance.__hash__())
-        # print(self.instance)
-        # print(self.context.get("image_already_saved"))
         image_already_saved = 0
         if self.context.get("image_already_saved") is not None:
             image_already_saved = 1
@@ -266,28 +284,36 @@ class RecipeSerializer(serializers.ModelSerializer):
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
-
+    """
+    Recipe's short data serializer.
+    """
     class Meta:
         model = Recipe
         fields = ("id", "name", "cooking_time")
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
-
+    """
+    ShoppingCart's data serializer.
+    """
     class Meta:
         model = ShoppingCart
         fields = ("recipe_id",)
 
 
 class RecipeFavoritedSerializer(serializers.ModelSerializer):
-
+    """
+    RecipeFavorited's data serializer.
+    """
     class Meta:
         model = RecipeFavorited
         fields = ("recipe_id",)
 
 
 class SubscriptionSerializerList(serializers.ModelSerializer):
-
+    """
+    Subscription's data serializer.
+    """
     class Meta:
         model = User
         fields = [

@@ -14,8 +14,6 @@ services:
       - /var/lib/postgresql/data/
     env_file:
       - ../backend/apps/apps/.env
-     # - ./.env
-     # - . /backend/apps/apps/.env
 
   web:
     build: ../backend
@@ -27,8 +25,6 @@ services:
       - db
     env_file:
       - ../backend/apps/apps/.env
-     # - ./.env
-     # - . /backend/apps/apps/.env
 
   nginx:
     image: nginx:1.19.3

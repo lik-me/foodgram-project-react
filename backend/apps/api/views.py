@@ -1,5 +1,3 @@
-# from http import HTTPStatus
-
 from django.db.models import Subquery
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
@@ -14,7 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from apps.settings import VALIDATION_ERRORS
+from apps.settings import VALIDATION_ERRORS, RECIPES_PER_PAGE
 
 from .permissons import IsUserOrReadOnly
 from .serializers import (IngredientSerializer, RecipeFavoritedSerializer,
@@ -76,11 +74,11 @@ class RecipesViewSet(viewsets.ModelViewSet):
         tags_query = self.request.query_params.getlist('tags',)
         filters = {}
 
-        if tags is not None:
+        if tags:
             tags_query = self.request.query_params.getlist('tags',)
             recipes_list = Recipe.objects.filter(tags__slug__in=tags_query)
             filters["tags__slug__in"] = tags_query
-        if author is not None:
+        if author:
             author_query = self.request.query_params['author']
             recipes_list = Recipe.objects.filter(author=author_query)
             filters["author"] = author_query
@@ -100,10 +98,10 @@ class RecipesViewSet(viewsets.ModelViewSet):
                     pk__in=Subquery(recipes_shopping_cart.values("recipe_id")))
                 filters["pk__in"] = recipes_shopping_cart
         recipes_list = Recipe.objects.filter(**filters).distinct()
-        if limit is not None:
+        if limit:
             limit = int(limit)
         else:
-            limit = 10
+            limit = RECIPES_PER_PAGE
         paginator = PageNumberPagination()
         paginator.page_size = limit
         result_page = paginator.paginate_queryset(recipes_list, request)
@@ -182,7 +180,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
             data_to_response_new_order = (
                 utils.recipe_serializer_response_update(data_to_response))
             data_to_response_new_order['image'] = row_image_data
-            #data_to_response_new_order['image'] = "image"
             return Response(data_to_response_new_order,
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -9,8 +9,6 @@ def recipe_image_name(instance, filename):
     file_ext = filename[filename.rfind("."):]
     file_name = (f"{str(instance.id)}{file_ext}")
     return path_join('recipes', 'images', file_name)
-    # return join(['recipes', 'images', file_name])
-    # return path_join(['recipes', 'images', file_name])
 
 
 def recipe_image_create(data, recipe_id):
