@@ -15,9 +15,6 @@ Foodgram ориентирован, в первую очередь, для пол
 
 Сайт снабжен удобной системой фильтрации рецептов по описательным тегам.
 
-### Адрес проекта
-http://51.250.70.5
-
 ### Технологии
 Python 3.7
 Django 2.2.19
@@ -39,12 +36,6 @@ React
 sudo docker-compose exec web python manage.py migrate
 sudo docker-compose exec web python manage.py createsuperuser
 sudo docker-compose exec web python manage.py import_data
-http://51.250.70.5/admin/
-```
-
-# Примеры API
-```
-http://51.250.70.5/api/docs/redoc.html
 ```
 
 # Автор
